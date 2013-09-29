@@ -1,0 +1,4 @@
+JarWrapper makes use of a few third party libraries made by Nathan Sweet:
+
+Lib: Scar, License: New BSD License, Source: https://code.google.com/p/scar/
+Lib: JSonBeans, License: New BSD License, Source: https://code.google.com/p/jsonbeans/
