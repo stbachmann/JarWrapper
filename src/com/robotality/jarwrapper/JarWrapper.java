@@ -219,7 +219,7 @@ public class JarWrapper {
 		// Customise bash script
 		File execScript = new File(outputPath + "/temp/Exec.sh");
 		String execScriptString = readFile(execScript);
-		execScriptString = execScriptString.replace("#EXEC_JAR#", "./content/" + config.executableArgument);
+		execScriptString = execScriptString.replace("#EXEC_JAR#", config.executableArgument);
 		writeToFile(execScriptString, execScript);
 		
 		// Rename run script
