@@ -31,12 +31,12 @@ public class JarWrapper {
 		System.out.println("Jar Wrapper Version " + version);
 		System.out.println("*********");
 		
-		/*
+		
 		BundlerConfig config = new BundlerConfig();
 		config.defaults();
 		String configFile = json.prettyPrint(config);
-		saveConfigFile(configFile);*/
-		
+		saveConfigFile(configFile);
+		/*
 		System.out.print("Loading config file ... ");
 		
 		File configFile;
@@ -69,8 +69,13 @@ public class JarWrapper {
 			wrapOSX();
 			System.out.println("Success.");
 		}
+		else if(config.winConfig != null){
+			System.out.print("Wrapping Windows executable ... ");
+			wrapWin();
+			System.out.println("Success.");
+		}
 		
-		System.out.println("Finished.");
+		System.out.println("Finished.");*/
 	}
 
 	public static void wrapOSX() throws IOException {
@@ -119,6 +124,20 @@ public class JarWrapper {
 		new File(outputPath + "/Contents/MacOS/jre/ASSEMBLY_EXCEPTION").setExecutable(true);
 		new File(outputPath + "/Contents/MacOS/jre/LICENSE").setExecutable(true);
 		new File(outputPath + "/Contents/MacOS/jre/THIRD_PARTY_README").setExecutable(true);
+	}
+
+	private static void wrapWin() {
+		String outputPath = config.winConfig.outputPath + config.appName;
+		File outputFolder = new File(outputPath);
+		if(outputFolder.exists())
+			paths(outputPath).delete();
+		
+		if(!new File(outputPath).mkdirs()){
+			if(!outputFolder.exists()){
+				System.out.println("Could not create output folders. Abort.");
+				System.exit(0);
+			}
+		}
 	}
 
 	private static void saveConfigFile(String configFile) throws IOException {
