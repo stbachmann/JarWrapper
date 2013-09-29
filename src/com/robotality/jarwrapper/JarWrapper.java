@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 
 import com.esotericsoftware.jsonbeans.Json;
 import com.esotericsoftware.jsonbeans.OutputType;
+import com.esotericsoftware.scar.Scar;
 
 public class JarWrapper {
 	public static String version = "0.1";
@@ -39,7 +40,7 @@ public class JarWrapper {
 		String configFile = json.prettyPrint(config);
 		saveConfigFile(configFile);
 		*/
-	
+		
 		System.out.print("Loading config file ... ");
 		
 		File configFile;
@@ -132,6 +133,9 @@ public class JarWrapper {
 		new File(outputPath + "/Contents/MacOS/jre/ASSEMBLY_EXCEPTION").setExecutable(true);
 		new File(outputPath + "/Contents/MacOS/jre/LICENSE").setExecutable(true);
 		new File(outputPath + "/Contents/MacOS/jre/THIRD_PARTY_README").setExecutable(true);
+		
+		if(config.zipOutput)
+			Scar.zip(paths(outputPath), outputPath + "/.." + "/" + config.appName + ".zip");
 	}
 
 	private static void wrapWin() throws IOException {
@@ -192,6 +196,9 @@ public class JarWrapper {
 		for(int i=0; i<config.additionalResources.size(); i++){
 			paths(config.additionalResources.get(i), "**").copyTo(outputPath + "/content");
 		}
+		
+		if(config.zipOutput)
+			Scar.zip(paths(outputPath), outputPath + "/.." + "/" + config.appName + ".zip");
 	}
 
 	private static void wrapLinux() throws IOException {
@@ -250,6 +257,11 @@ public class JarWrapper {
 		new File(outputPath + "/64/jre/ASSEMBLY_EXCEPTION").setExecutable(true);
 		new File(outputPath + "/64/jre/LICENSE").setExecutable(true);
 		new File(outputPath + "/64/jre/THIRD_PARTY_README").setExecutable(true);
+		
+		if(config.zipOutput){
+			Scar.zip(paths(outputPath + "/32"), outputPath + "/.." + "/" + config.appName + "-32.zip");
+			Scar.zip(paths(outputPath + "/64"), outputPath + "/.." + "/" + config.appName + "-64.zip");
+		}
 	}
 
 	private static void saveConfigFile(String configFile) throws IOException {

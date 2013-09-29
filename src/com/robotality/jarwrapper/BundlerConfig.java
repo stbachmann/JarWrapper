@@ -17,6 +17,8 @@ public class BundlerConfig {
 	
 	public ArrayList<String> additionalResources;
 	
+	public boolean zipOutput;
+	
 	public void defaults(){
 		appName = "Default App";
 		executableJarPath = "jar|executable.jar";
@@ -30,6 +32,8 @@ public class BundlerConfig {
 		
 		linuxConfig = new LinuxConfig();
 		linuxConfig.defaults();
+		
+		zipOutput = true;
 		
 		additionalResources = new ArrayList<String>();
 		additionalResources.add("resources/content/");

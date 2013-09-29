@@ -2,6 +2,7 @@
 "executableArgument": "executable.jar",
 "appName": "Default App",
 "executableJarPath": "jar|executable.jar",
+"zipOutput": true,
 "osxConfig": {
 	"jrePath": "mac/jre",
 	"outputPath": "output/mac/",
@@ -10,6 +11,7 @@
 	"resourcePath": "mac/resources/",
 	"iconPath": "mac|icon.icns"
 },
+
 "linuxConfig": {
 	"jrePath64": "linux/jre/64",
 	"jrePath32": "linux/jre/32",
@@ -25,5 +27,5 @@
 },
 "additionalResources": [
 	"resources/content/"
-]
+],
 }
