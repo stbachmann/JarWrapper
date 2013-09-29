@@ -7,3 +7,5 @@
 
 # target directories:
 /bin
+/target
+/dist
