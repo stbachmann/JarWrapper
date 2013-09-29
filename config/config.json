@@ -1,0 +1,16 @@
+{
+"osxConfig": {
+	"jrePath": "mac/jre",
+	"packageName": "org.app.default",
+	"resourcePath": "mac/resources/",
+	"iconPath": "mac|icon.icns",
+	"outputPath": "output/mac/"
+},
+"appName": "Default App",
+"executableJarPath": "jar|executable.jar",
+"executableArgument": "executable.jar",
+"version": "0.01",
+"additionalResources": [
+	"resources/content/"
+]
+}

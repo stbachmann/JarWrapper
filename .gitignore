@@ -1,0 +1,9 @@
+# Temporary Files
+*~
+.*.swp
+.DS_STORE
+*.mdb
+# per project ignores, it's cumbersome, but reduces the risk of missing something
+
+# target directories:
+/bin
