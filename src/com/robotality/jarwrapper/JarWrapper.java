@@ -1,11 +1,6 @@
 package com.robotality.jarwrapper;
 
-import static com.esotericsoftware.scar.Build.build;
-import static com.esotericsoftware.scar.Build.oneJAR;
-import static com.esotericsoftware.scar.Scar.ftpUpload;
-import static com.esotericsoftware.scar.Scar.path;
 import static com.esotericsoftware.scar.Scar.paths;
-import static com.esotericsoftware.scar.Scar.readFile;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,6 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import com.esotericsoftware.jsonbeans.Json;
 import com.esotericsoftware.jsonbeans.OutputType;
@@ -23,20 +19,27 @@ public class JarWrapper {
 	public static Arguments arguments;
 	public static BundlerConfig config;
 	
+	public static boolean isWindows = false;
+	public static boolean isMacOSX = false;
+	public static boolean isLinux = false;
+	
 	public static void main(String[] args) throws IOException{
 		arguments = new Arguments(args);
 		Json json = new Json();
 		json.setOutputType(OutputType.json);
 		
+		determineOS();
+		
 		System.out.println("Jar Wrapper Version " + version);
 		System.out.println("*********");
 		
-		
+		/*
 		BundlerConfig config = new BundlerConfig();
 		config.defaults();
 		String configFile = json.prettyPrint(config);
 		saveConfigFile(configFile);
-		/*
+		*/
+	
 		System.out.print("Loading config file ... ");
 		
 		File configFile;
@@ -69,13 +72,13 @@ public class JarWrapper {
 			wrapOSX();
 			System.out.println("Success.");
 		}
-		else if(config.winConfig != null){
-			System.out.print("Wrapping Windows executable ... ");
+		if(config.winConfig != null){
+			System.out.println("Wrapping Windows executable ... ");
 			wrapWin();
-			System.out.println("Success.");
+			System.out.println("Windows ... Success.");
 		}
 		
-		System.out.println("Finished.");*/
+		System.out.println("Finished.");
 	}
 
 	public static void wrapOSX() throws IOException {
@@ -101,7 +104,7 @@ public class JarWrapper {
 		File pListFile = new File(outputPath + "/Contents/Info.plist");
 		String pListFileString = readFile(pListFile);
 		pListFileString = pListFileString.replace("#APP_NAME#", config.appName);
-		pListFileString = pListFileString.replace("#VERSION#", config.version);
+		pListFileString = pListFileString.replace("#VERSION#", config.osxConfig.macVersion);
 		
 		writeToFile(pListFileString, pListFile);
 		
@@ -126,7 +129,7 @@ public class JarWrapper {
 		new File(outputPath + "/Contents/MacOS/jre/THIRD_PARTY_README").setExecutable(true);
 	}
 
-	private static void wrapWin() {
+	private static void wrapWin() throws IOException {
 		String outputPath = config.winConfig.outputPath + config.appName;
 		File outputFolder = new File(outputPath);
 		if(outputFolder.exists())
@@ -137,6 +140,52 @@ public class JarWrapper {
 				System.out.println("Could not create output folders. Abort.");
 				System.exit(0);
 			}
+		}
+		
+		paths("win|jarwrapper.launch4j.xml").copyTo(outputPath);
+		paths(config.executableJarPath).copyTo(outputPath + "/content");
+		paths(config.winConfig.jrePath, "**").copyTo(outputPath + "/jre");
+		paths(config.winConfig.iconPath).copyTo(outputPath + "/temp");
+		
+		// Update the launch4j config for this exe
+		File launch4jconfig = new File(outputPath + "/jarwrapper.launch4j.xml");
+		String launch4jString = readFile(launch4jconfig);
+		launch4jString = launch4jString.replace("#EXEC_JAR#", "content/" + config.executableArgument);
+		launch4jString = launch4jString.replace("#OUTPUT_PATH#", outputFolder.getAbsolutePath() + "/" + config.appName + ".exe");
+		launch4jString = launch4jString.replace("#VERSION#", config.winConfig.winVersion);
+		launch4jString = launch4jString.replace("#APP_NAME#", config.appName);
+		launch4jString = launch4jString.replace("#COPYRIGHT#", config.winConfig.copyright);
+		launch4jString = launch4jString.replace("#ICON#", "temp/"+config.winConfig.iconPath.substring(config.winConfig.iconPath.indexOf("|")+1));
+		launch4jString = launch4jString.replace("#COMPANY_NAME#", config.winConfig.companyName);
+		launch4jString = launch4jString.replace("#APP_EXE#", config.appName + ".exe");
+		writeToFile(launch4jString, launch4jconfig);
+		
+		// Each OS will need it's own execution of launch4j
+		if(isMacOSX){
+			String configPath = "./"  + outputPath + "/jarwrapper.launch4j.xml";
+			Runtime.getRuntime().exec("win/launch4j/launch4j " + configPath);
+			
+			String[] commands = {"./win/launch4j/launch4j", configPath};
+
+			Process proc = Runtime.getRuntime().exec(commands);
+			
+			BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+			String s;
+	        // read any errors from the attempted command
+	        while ((s = stdError.readLine()) != null) {
+	            System.out.println(s);
+	        }
+		}
+		
+		// clean-up
+		paths(outputPath, "jarwrapper.launch4j.xml").delete();
+		paths(outputPath + "/temp").delete();
+		new File(outputPath + "/temp").delete();
+		
+		// copy additional resources
+		for(int i=0; i<config.additionalResources.size(); i++){
+			paths(config.additionalResources.get(i), "**").copyTo(outputPath + "/content");
 		}
 	}
 
@@ -166,5 +215,16 @@ public class JarWrapper {
 		output.write(string);
 		
 		output.close();
+	}
+
+	private static void determineOS() {
+		String os = System.getProperty("os.name");
+		
+		if(os.startsWith("Windows"))
+			isWindows = true;
+		else if(os.startsWith("Mac"))
+			isMacOSX = true;
+		else if(os.startsWith("Linux"))
+			isLinux = true;
 	}
 }

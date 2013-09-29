@@ -7,7 +7,6 @@ import com.robotality.jarwrapper.config.WindowsConfig;
 
 public class BundlerConfig {
 	public String appName;
-	public String version;
 	public String executableJarPath;
 	public String executableArgument;
 	
@@ -18,8 +17,7 @@ public class BundlerConfig {
 	
 	public void defaults(){
 		appName = "Default App";
-		version = "0.01";
-		executableJarPath = "jar/executable.jar";
+		executableJarPath = "jar|executable.jar";
 		executableArgument = "executable.jar";
 		
 		osxConfig = new OSXConfig();
