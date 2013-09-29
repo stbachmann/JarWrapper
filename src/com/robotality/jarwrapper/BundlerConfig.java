@@ -2,6 +2,7 @@ package com.robotality.jarwrapper;
 
 import java.util.ArrayList;
 
+import com.robotality.jarwrapper.config.LinuxConfig;
 import com.robotality.jarwrapper.config.OSXConfig;
 import com.robotality.jarwrapper.config.WindowsConfig;
 
@@ -12,6 +13,7 @@ public class BundlerConfig {
 	
 	public OSXConfig osxConfig;
 	public WindowsConfig winConfig;
+	public LinuxConfig linuxConfig;
 	
 	public ArrayList<String> additionalResources;
 	
@@ -25,6 +27,9 @@ public class BundlerConfig {
 		
 		winConfig = new WindowsConfig();
 		winConfig.defaults();
+		
+		linuxConfig = new LinuxConfig();
+		linuxConfig.defaults();
 		
 		additionalResources = new ArrayList<String>();
 		additionalResources.add("resources/content/");

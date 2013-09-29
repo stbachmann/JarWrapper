@@ -1,7 +1,7 @@
 {
-"additionalResources": [
-	"resources/content/"
-],
+"executableArgument": "executable.jar",
+"appName": "Default App",
+"executableJarPath": "jar|executable.jar",
 "osxConfig": {
 	"jrePath": "mac/jre",
 	"outputPath": "output/mac/",
@@ -10,9 +10,11 @@
 	"resourcePath": "mac/resources/",
 	"iconPath": "mac|icon.icns"
 },
-"executableArgument": "executable.jar",
-"appName": "Default App",
-"executableJarPath": "jar|executable.jar",
+"linuxConfig": {
+	"jrePath64": "linux/jre/64",
+	"jrePath32": "linux/jre/32",
+	"outputPath": "output/linux/"
+},
 "winConfig": {
 	"jrePath": "win/jre",
 	"outputPath": "output/win/",
@@ -20,5 +22,8 @@
 	"companyName": "Company Name",
 	"winVersion": "0.0.0.1",
 	"iconPath": "win|icon.ico"
-}
+},
+"additionalResources": [
+	"resources/content/"
+]
 }

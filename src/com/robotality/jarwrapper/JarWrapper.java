@@ -77,6 +77,11 @@ public class JarWrapper {
 			wrapWin();
 			System.out.println("Windows ... Success.");
 		}
+		if(config.linuxConfig != null){
+			System.out.print("Wrapping Linux executable ... ");
+			wrapLinux();
+			System.out.println("Success.");
+		}
 		
 		System.out.println("Finished.");
 	}
@@ -187,6 +192,64 @@ public class JarWrapper {
 		for(int i=0; i<config.additionalResources.size(); i++){
 			paths(config.additionalResources.get(i), "**").copyTo(outputPath + "/content");
 		}
+	}
+
+	private static void wrapLinux() throws IOException {
+		String outputPath = config.linuxConfig.outputPath + config.appName;
+		File outputFolder = new File(outputPath);
+		if(outputFolder.exists())
+			paths(outputPath).delete();
+		
+		if(!new File(outputPath).mkdirs()){
+			if(!outputFolder.exists()){
+				System.out.println("Could not create output folders. Abort.");
+				System.exit(0);
+			}
+		}
+		
+		// Copy everything over
+		paths("linux|Exec.sh").copyTo(outputPath + "/temp");
+		
+		paths(config.executableJarPath).copyTo(outputPath + "/32/content");
+		paths(config.executableJarPath).copyTo(outputPath + "/64/content");
+		
+		paths(config.linuxConfig.jrePath32, "**").copyTo(outputPath + "/32/jre");
+		paths(config.linuxConfig.jrePath64, "**").copyTo(outputPath + "/64/jre");
+		
+		// Customise bash script
+		File execScript = new File(outputPath + "/temp/Exec.sh");
+		String execScriptString = readFile(execScript);
+		execScriptString = execScriptString.replace("#EXEC_JAR#", "./content/" + config.executableArgument);
+		writeToFile(execScriptString, execScript);
+		
+		// Rename run script
+		File runScript = new File(outputPath + "/temp/Exec.sh");
+		runScript.renameTo(new File(outputPath + "/temp/" + config.appName + ".sh"));
+		
+		// Copy script
+		paths(outputPath + "/temp/", config.appName + ".sh").copyTo(outputPath + "/32").copyTo(outputPath + "/64");
+		
+		// clean-up
+		paths(outputPath + "/temp").delete();
+		new File(outputPath + "/temp").delete();
+		
+		// copy additional resources
+		for(int i=0; i<config.additionalResources.size(); i++){
+			paths(config.additionalResources.get(i), "**").copyTo(outputPath + "/32/content").copyTo(outputPath + "/64/content");
+		}
+		
+		// Fix executable stuff (grumble)
+		new File(outputPath + "/32/jre/bin/java").setExecutable(true);
+		new File(outputPath + "/32/" + config.appName + ".sh").setExecutable(true);
+		new File(outputPath + "/32/jre/ASSEMBLY_EXCEPTION").setExecutable(true);
+		new File(outputPath + "/32/jre/LICENSE").setExecutable(true);
+		new File(outputPath + "/32/jre/THIRD_PARTY_README").setExecutable(true);
+		
+		new File(outputPath + "/64/jre/bin/java").setExecutable(true);
+		new File(outputPath + "/64/" + config.appName + ".sh").setExecutable(true);
+		new File(outputPath + "/64/jre/ASSEMBLY_EXCEPTION").setExecutable(true);
+		new File(outputPath + "/64/jre/LICENSE").setExecutable(true);
+		new File(outputPath + "/64/jre/THIRD_PARTY_README").setExecutable(true);
 	}
 
 	private static void saveConfigFile(String configFile) throws IOException {
