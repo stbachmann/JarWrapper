@@ -14,7 +14,7 @@
   <manifest></manifest>
   <icon>#ICON#</icon>
   <jre>
-    <path>temp/jre</path>
+    <path>jre/</path>
     <minVersion></minVersion>
     <maxVersion></maxVersion>
     <jdkPreference>jdkOnly</jdkPreference>
