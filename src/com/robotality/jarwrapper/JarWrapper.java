@@ -170,7 +170,7 @@ public class JarWrapper {
 		writeToFile(launch4jString, launch4jconfig);
 		
 		// Each OS will need it's own execution of launch4j
-		if(isMacOSX){
+		if(isMacOSX || isLinux){
 			String configPath = "./"  + outputPath + "/jarwrapper.launch4j.xml";
 			Runtime.getRuntime().exec("win/launch4j/launch4j " + configPath);
 			
