@@ -1,8 +1,6 @@
 ##JarWrapper
 
-JarWrapper is a little utility to bundle Java jars with their own JRE, making them executable natively. The tool can bundle executables for Windows, Mac OSX and Linux.
-
-_Currently only works on Mac OSX, but Windows/Linux support is coming soon._
+JarWrapper is a little utility to bundle Java jars with their own JRE, making them executable natively. The tool currently bundles executables for Mac OS X, but Windows and Linux support is planned!
 
 ###Quick Tutorial
 Download the latest JarWrapper from here and unzip to a directory on your harddrive: [http://robotality.com/jarwrapper/download/JarWrapper-latest.zip](http://robotality.com/jarwrapper/download/JarWrapper-latest.zip)
